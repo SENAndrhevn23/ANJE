@@ -28,6 +28,7 @@ class OptionsState extends MusicBeatState
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
+
 	public static var menuBG:FlxSprite;
 	public static var onPlayState:Bool = false;
 
@@ -76,6 +77,9 @@ class OptionsState extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 
+		// LOCK CAMERA
+		FlxG.camera.scroll.set(0, 0);
+
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);
 
@@ -88,13 +92,16 @@ class OptionsState extends MusicBeatState
 				true
 			);
 
-			optionText.screenCenter();
-			optionText.y += (100 * (i - (options.length / 2))) + 50;
 			optionText.scale.set(0.8, 0.8);
 			optionText.updateHitbox();
 
-			optionText.isMenuItem = true;
-			optionText.targetY = i - curSelected;
+			// STATIC POSITIONS
+			optionText.x = FlxG.width / 2 - optionText.width / 2;
+			optionText.y = 120 + (i * 70);
+
+			// DISABLE MENU SCROLLING
+			optionText.isMenuItem = false;
+			optionText.targetY = 0;
 
 			grpOptions.add(optionText);
 		}
@@ -124,6 +131,9 @@ class OptionsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		// KEEP CAMERA LOCKED
+		FlxG.camera.scroll.set(0, 0);
 
 		if (controls.UI_UP_P)
 			changeSelection(-1);
@@ -156,18 +166,15 @@ class OptionsState extends MusicBeatState
 	{
 		curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
 
-		var bullShit:Int = 0;
+		var index:Int = 0;
 
 		for (item in grpOptions.members)
 		{
 			if (item == null) continue;
 
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
 			item.alpha = 0.6;
 
-			if (item.targetY == 0)
+			if (index == curSelected)
 			{
 				item.alpha = 1;
 
@@ -177,9 +184,12 @@ class OptionsState extends MusicBeatState
 				selectorRight.x = item.x + item.width + 15;
 				selectorRight.y = item.y;
 			}
+
+			index++;
 		}
 
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		// REMOVED SCROLL SOUND
+		// FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	override function destroy()
