@@ -36,8 +36,11 @@ class OptionsState extends MusicBeatState
 	var selectorLeft:Alphabet;
 	var selectorRight:Alphabet;
 
-	// MENU SIZE
-	var menuScale:Float = 0.8;
+	// CHANGE THIS TO MAKE TEXT BIGGER OR SMALLER
+	// 1.0 = normal Psych size
+	// 0.75 = recommended
+	// 0.6 = compact
+	var textScale:Float = 0.75;
 
 	function openSelectedSubstate(label:String)
 	{
@@ -78,16 +81,19 @@ class OptionsState extends MusicBeatState
 		DiscordClient.changePresence("Options Menu", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.color = 0xFFea71fd;
-		bg.updateHitbox();
-		bg.screenCenter();
-		add(bg);
+		// BACKGROUND
+		menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		menuBG.antialiasing = ClientPrefs.data.antialiasing;
+		menuBG.color = 0xFFea71fd;
+		menuBG.updateHitbox();
+		menuBG.screenCenter();
+		add(menuBG);
 
+		// OPTIONS GROUP
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);
 
+		// OPTION TEXTS
 		for (num => option in options)
 		{
 			var optionText:Alphabet = new Alphabet(
@@ -97,29 +103,37 @@ class OptionsState extends MusicBeatState
 				true
 			);
 
-			// CHANGE SIZE HERE
-			optionText.scale.set(menuScale, menuScale);
+			// SCALE
+			optionText.scaleX = textScale;
+			optionText.scaleY = textScale;
 			optionText.updateHitbox();
 
+			// POSITION
 			optionText.screenCenter();
 
-			// STATIC POSITIONS
-			optionText.y += (92 * (num - (options.length / 2))) + 45;
+			var spacing:Float = 92 * textScale;
+			optionText.y += (spacing * (num - (options.length / 2))) + 45;
 
-			// DISABLE SCROLLING
-			optionText.isMenuItem = false;
-			optionText.targetY = 0;
+			// PSYCH STYLE MENU MOVEMENT
+			optionText.isMenuItem = true;
+			optionText.targetY = num;
+
+			optionText.alpha = 0.6;
 
 			grpOptions.add(optionText);
 		}
 
+		// LEFT SELECTOR
 		selectorLeft = new Alphabet(0, 0, '>', true);
-		selectorLeft.scale.set(menuScale, menuScale);
+		selectorLeft.scaleX = textScale;
+		selectorLeft.scaleY = textScale;
 		selectorLeft.updateHitbox();
 		add(selectorLeft);
 
+		// RIGHT SELECTOR
 		selectorRight = new Alphabet(0, 0, '<', true);
-		selectorRight.scale.set(menuScale, menuScale);
+		selectorRight.scaleX = textScale;
+		selectorRight.scaleY = textScale;
 		selectorRight.updateHitbox();
 		add(selectorRight);
 
@@ -148,17 +162,20 @@ class OptionsState extends MusicBeatState
 		// LOCK CAMERA
 		FlxG.camera.scroll.set(0, 0);
 
+		// UP
 		if (controls.UI_UP_P)
 			changeSelection(-1);
 
+		// DOWN
 		if (controls.UI_DOWN_P)
 			changeSelection(1);
 
+		// BACK
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 
-			if(onPlayState)
+			if (onPlayState)
 			{
 				StageData.loadDirectory(PlayState.SONG);
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -169,6 +186,7 @@ class OptionsState extends MusicBeatState
 				MusicBeatState.switchState(new MainMenuState());
 			}
 		}
+		// ACCEPT
 		else if (controls.ACCEPT)
 		{
 			openSelectedSubstate(options[curSelected]);
@@ -181,11 +199,17 @@ class OptionsState extends MusicBeatState
 
 		for (num => item in grpOptions.members)
 		{
-			if(item == null) continue;
+			if (item == null)
+				continue;
 
+			// PSYCH STYLE SCROLLING
+			item.targetY = num - curSelected;
+
+			// ALPHA
 			item.alpha = 0.6;
 
-			if (num == curSelected)
+			// SELECTED
+			if (item.targetY == 0)
 			{
 				item.alpha = 1;
 
@@ -197,8 +221,8 @@ class OptionsState extends MusicBeatState
 			}
 		}
 
-		// REMOVED SCROLL SOUND
-		// FlxG.sound.play(Paths.sound('scrollMenu'));
+		// SCROLL SOUND
+		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	override function destroy()
