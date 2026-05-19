@@ -74,6 +74,26 @@ class CoolUtil
 		return daList;
 	}
 
+	/**
+	 * Pad a number to a fixed width.
+	 * This keeps combo / score image output readable and stable.
+	 */
+	inline public static function fillNumber(value:Dynamic, digits:Int, code:Int):String
+	{
+		var defined:String = Std.string(value);
+		var isNegative:Bool = defined.length > 0 && defined.charAt(0) == "-";
+		if (isNegative) defined = defined.substr(1);
+
+		if (defined.length < digits)
+		{
+			var pad:String = String.fromCharCode(code);
+			while (defined.length < digits)
+				defined = pad + defined;
+		}
+
+		return (isNegative ? "-" : "") + defined;
+	}
+
 	public static function floorDecimal(value:Float, decimals:Int):Float
 	{
 		if(decimals < 1)
