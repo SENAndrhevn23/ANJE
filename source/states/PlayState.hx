@@ -5,6 +5,7 @@ import backend.StageData;
 import backend.WeekData;
 import backend.Song;
 import backend.Rating;
+import backend.CoolUtil;
 import backend.FFMpeg;
 
 import flixel.FlxBasic;
@@ -249,6 +250,8 @@ class PlayState extends MusicBeatState
     public var skipArrowStartTween:Bool = false;
     public var disableGCLag:Bool = ClientPrefs.data.disableGCLag;
     public var limitCombo:Int = ClientPrefs.data.limitCombo;
+
+	private static inline var HSLICE_NUMBER_DIGITS:Int = 3;
 
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
@@ -2985,7 +2988,7 @@ if(ClientPrefs.data.disableGCLag)
 		if (showCombo)
 			comboGroup.add(comboSpr);
 
-		var separatedScore:String = Std.string(combo).lpad('0', 3);
+		var separatedScore:String = CoolUtil.fillNumber(combo, HSLICE_NUMBER_DIGITS, '0'.code);
 		for (i in 0...separatedScore.length)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(uiFolder + 'num' + Std.parseInt(separatedScore.charAt(i)) + uiPostfix));
