@@ -92,6 +92,14 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
+		var option:Option = new Option('Icon Bounce:',
+			"Which icon bounce would you like?",
+			'iconBounceType',
+			STRING,
+			'Golden Apple',
+			['Golden Apple', 'Dave and Bambi', 'Old Psych', 'New Psych']);
+		addOption(option);
+
 		var option:Option = new Option('Flashing Lights',
 			"Uncheck this if you're sensitive to flashing lights!",
 			'flashing',
