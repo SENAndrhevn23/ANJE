@@ -33,47 +33,48 @@ class OptionsState extends MusicBeatState
 	public static var menuBG:FlxSprite;
 	public static var onPlayState:Bool = false;
 
-	var selectorLeft:Alphabet;
-	var selectorRight:Alphabet;
-
-	// CHANGE THIS TO MAKE TEXT BIGGER OR SMALLER
-	// 1.0 = normal Psych size
-	// 0.75 = recommended
+	// CHANGE THIS
+	// 1 = normal Psych size
+	// 0.8 = smaller
+	// 0.7 = recommended
 	// 0.6 = compact
-	var textScale:Float = 0.75;
+	var textScale:Float = 0.7;
 
 	function openSelectedSubstate(label:String)
 	{
 		switch(label)
 		{
 			case 'Note Colors':
-				openSubState(new NotesColorSubState());
+				openSubState(new options.NotesColorSubState());
 
 			case 'Controls':
-				openSubState(new ControlsSubState());
+				openSubState(new options.ControlsSubState());
 
 			case 'Graphics':
-				openSubState(new GraphicsSettingsSubState());
+				openSubState(new options.GraphicsSettingsSubState());
 
 			case 'Optimizations':
-				openSubState(new OptimizationsSubState());
+				openSubState(new options.OptimizationsSubState());
 
 			case 'Video Rendering':
-				openSubState(new VideoRenderingSubState());
+				openSubState(new options.VideoRenderingSubState());
 
 			case 'Visuals':
-				openSubState(new VisualsSettingsSubState());
+				openSubState(new options.VisualsSettingsSubState());
 
 			case 'Gameplay':
-				openSubState(new GameplaySettingsSubState());
+				openSubState(new options.GameplaySettingsSubState());
 
 			case 'Adjust Delay and Combo':
-				MusicBeatState.switchState(new NoteOffsetState());
+				MusicBeatState.switchState(new options.NoteOffsetState());
 
 			case 'Language':
-				openSubState(new LanguageSubState());
+				openSubState(new options.LanguageSubState());
 		}
 	}
+
+	var selectorLeft:Alphabet;
+	var selectorRight:Alphabet;
 
 	override function create()
 	{
@@ -81,19 +82,19 @@ class OptionsState extends MusicBeatState
 		DiscordClient.changePresence("Options Menu", null);
 		#end
 
-		// BACKGROUND
-		menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		menuBG.antialiasing = ClientPrefs.data.antialiasing;
-		menuBG.color = 0xFFea71fd;
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-		add(menuBG);
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.antialiasing = ClientPrefs.data.antialiasing;
+		bg.color = 0xFFea71fd;
+		bg.updateHitbox();
 
-		// OPTIONS GROUP
+		bg.screenCenter();
+		add(bg);
+
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);
 
-		// OPTION TEXTS
+		var spacing:Float = 92 * textScale;
+
 		for (num => option in options)
 		{
 			var optionText:Alphabet = new Alphabet(
@@ -110,27 +111,17 @@ class OptionsState extends MusicBeatState
 
 			// POSITION
 			optionText.screenCenter();
-
-			var spacing:Float = 92 * textScale;
 			optionText.y += (spacing * (num - (options.length / 2))) + 45;
-
-			// PSYCH STYLE MENU MOVEMENT
-			optionText.isMenuItem = true;
-			optionText.targetY = num;
-
-			optionText.alpha = 0.6;
 
 			grpOptions.add(optionText);
 		}
 
-		// LEFT SELECTOR
 		selectorLeft = new Alphabet(0, 0, '>', true);
 		selectorLeft.scaleX = textScale;
 		selectorLeft.scaleY = textScale;
 		selectorLeft.updateHitbox();
 		add(selectorLeft);
 
-		// RIGHT SELECTOR
 		selectorRight = new Alphabet(0, 0, '<', true);
 		selectorRight.scaleX = textScale;
 		selectorRight.scaleY = textScale;
@@ -159,23 +150,17 @@ class OptionsState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		// LOCK CAMERA
-		FlxG.camera.scroll.set(0, 0);
-
-		// UP
 		if (controls.UI_UP_P)
 			changeSelection(-1);
 
-		// DOWN
 		if (controls.UI_DOWN_P)
 			changeSelection(1);
 
-		// BACK
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 
-			if (onPlayState)
+			if(onPlayState)
 			{
 				StageData.loadDirectory(PlayState.SONG);
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -186,30 +171,24 @@ class OptionsState extends MusicBeatState
 				MusicBeatState.switchState(new MainMenuState());
 			}
 		}
-		// ACCEPT
 		else if (controls.ACCEPT)
 		{
 			openSelectedSubstate(options[curSelected]);
 		}
 	}
-
+	
 	function changeSelection(change:Int = 0)
 	{
 		curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
 
 		for (num => item in grpOptions.members)
 		{
-			if (item == null)
+			if(item == null)
 				continue;
 
-			// PSYCH STYLE SCROLLING
-			item.targetY = num - curSelected;
-
-			// ALPHA
 			item.alpha = 0.6;
 
-			// SELECTED
-			if (item.targetY == 0)
+			if (num == curSelected)
 			{
 				item.alpha = 1;
 
@@ -221,8 +200,8 @@ class OptionsState extends MusicBeatState
 			}
 		}
 
-		// SCROLL SOUND
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		// REMOVED SCROLL SOUND
+		// FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	override function destroy()
