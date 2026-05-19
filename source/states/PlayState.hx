@@ -2034,13 +2034,17 @@ if(ClientPrefs.data.disableGCLag)
 			var curTime:Float = Math.max(0, Conductor.songPosition - ClientPrefs.data.noteOffset);
 			songPercent = (curTime / songLength);
 
-			var songCalc:Float = (songLength - curTime);
-			if(ClientPrefs.data.timeBarType == 'Time Elapsed') songCalc = curTime;
-			var secondsTotal:Int = Math.floor(songCalc / 1000);
-			if(secondsTotal < 0) secondsTotal = 0;
-
 			if(ClientPrefs.data.timeBarType != 'Song Name')
-				timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+			{
+				var currentSeconds:Int = Math.floor(curTime / 1000);
+				var totalSeconds:Int = Math.floor(songLength / 1000);
+				if(currentSeconds < 0) currentSeconds = 0;
+				if(totalSeconds < 0) totalSeconds = 0;
+
+				timeTxt.text = FlxStringUtil.formatTime(currentSeconds, false)
+					+ ' / '
+					+ FlxStringUtil.formatTime(totalSeconds, false);
+			}
 		}
 		
 		// End song perfectly on time when rendering.
@@ -2120,11 +2124,8 @@ if(ClientPrefs.data.disableGCLag)
 								if(cpuControlled && !daNote.blockHit && daNote.canBeHit && (daNote.isSustainNote || daNote.strumTime <= Conductor.songPosition))
 									goodNoteHit(daNote);
 							}
-							else if(!daNote.hitByOpponent && !daNote.ignoreNote)
-							{
-								if (daNote.wasGoodHit || (daNote.canBeHit && (daNote.isSustainNote || daNote.strumTime <= Conductor.songPosition)))
-									opponentNoteHit(daNote);
-							}
+							else if (daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
+								opponentNoteHit(daNote);
 
 							if(daNote.isSustainNote && strum.sustainReduce) daNote.clipToStrumNote(strum);
 							// Kill extremely late notes and cause misses
