@@ -96,7 +96,6 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 			"Which icon bounce would you like?",
 			'iconBounceType',
 			STRING,
-			'Golden Apple',
 			['Golden Apple', 'Dave and Bambi', 'Old Psych', 'New Psych']);
 		addOption(option);
 
