@@ -632,10 +632,10 @@ class PlayState extends MusicBeatState
 		uiGroup.add(botplayTxt);
 		if(ClientPrefs.data.downScroll)
 			botplayTxt.y = healthBar.y + 70;
-		// Restore hit popups in gameplay for this PlayState
-		showRating = true;
-		showCombo = true;
-		showComboNum = true;
+		// Sync hit popup settings from saved prefs for this PlayState
+		showRating = ClientPrefs.data.showRating;
+		showCombo = ClientPrefs.data.showCombo;
+		showComboNum = ClientPrefs.data.showComboNum;
 
 		uiGroup.cameras = [camHUD];
 		noteGroup.cameras = [camHUD];
@@ -2959,7 +2959,7 @@ if(ClientPrefs.data.disableGCLag)
 		rating.acceleration.y = 550 * playbackRate * playbackRate;
 		rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
 		rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
-		rating.visible = (!ClientPrefs.data.hideHud && showRating);
+		rating.visible = (!ClientPrefs.data.hideHud && ClientPrefs.data.showRating);
 		rating.x += ClientPrefs.data.comboOffset[0];
 		rating.y -= ClientPrefs.data.comboOffset[1];
 		rating.antialiasing = antialias;
@@ -2969,7 +2969,7 @@ if(ClientPrefs.data.disableGCLag)
 		comboSpr.x = placement;
 		comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
 		comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
-		comboSpr.visible = (!ClientPrefs.data.hideHud && showCombo);
+		comboSpr.visible = (!ClientPrefs.data.hideHud && ClientPrefs.data.showCombo);
 		comboSpr.x += ClientPrefs.data.comboOffset[0];
 		comboSpr.y -= ClientPrefs.data.comboOffset[1];
 		comboSpr.antialiasing = antialias;
@@ -2991,10 +2991,15 @@ if(ClientPrefs.data.disableGCLag)
 		rating.updateHitbox();
 		var daLoop:Int = 0;
 		var xThing:Float = 0;
-		if (showCombo)
+		if (ClientPrefs.data.showCombo)
 			comboGroup.add(comboSpr);
 
-		var separatedScore:String = CoolUtil.fillNumber(combo, HSLICE_NUMBER_DIGITS, '0'.code);
+		var comboDisplay:Int = combo;
+		if (ClientPrefs.data.limitCombo > 0)
+			comboDisplay = Std.int(Math.min(comboDisplay, ClientPrefs.data.limitCombo));
+		if (comboDisplay > 999)
+			comboDisplay %= 1000;
+		var separatedScore:String = CoolUtil.fillNumber(comboDisplay, HSLICE_NUMBER_DIGITS, '0'.code);
 		for (i in 0...separatedScore.length)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(uiFolder + 'num' + Std.parseInt(separatedScore.charAt(i)) + uiPostfix));
@@ -3011,7 +3016,7 @@ if(ClientPrefs.data.disableGCLag)
 			numScore.visible = !ClientPrefs.data.hideHud;
 			numScore.antialiasing = antialias;
 			//if (combo >= 10 || combo == 0)
-			if(showComboNum)
+			if(ClientPrefs.data.showComboNum)
 				comboGroup.add(numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
