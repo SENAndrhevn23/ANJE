@@ -2,13 +2,17 @@ package debug;
 
 import flixel.FlxG;
 import flixel.math.FlxMath;
-import flixel.text.FlxText;
+import openfl.display.Sprite;
+import openfl.display.Shape;
+import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
 import openfl.system.System;
+import backend.Paths;
 
-class FPSCounter extends FlxText
+class FPSCounter extends Sprite
 {
 	public var currentFPS(default, null):Int = 0;
-
 	public var highestFPS:Int = 0;
 	public var lowestFPS:Int = 9999;
 
@@ -20,36 +24,47 @@ class FPSCounter extends FlxText
 	@:noCompletion private var times:Array<Float> = [];
 	private var deltaTimeout:Float = 0.0;
 
+	private var bg:Shape;
+	private var label:TextField;
+	private var padding:Int = 4;
+
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
-		super(x, y, 0, "", 14);
+		super();
 
-		setFormat(Paths.font("fps.ttf"), 14, color);
+		this.x = x;
+		this.y = y;
 
-		scrollFactor.set(0, 0);
-		moves = false;
-		selectable = false;
+		mouseEnabled = false;
+		mouseChildren = false;
 
-		// Proper semi-transparent background
-		background = true;
-		backgroundColor = 0x000000;
-		alpha = 0.5;
+		bg = new Shape();
+		addChild(bg);
 
-		text = "FPS: 0 | 0 | 0\nMEM: 0.00MB | 0.00GB";
+		label = new TextField();
+		label.selectable = false;
+		label.mouseEnabled = false;
+		label.multiline = true;
+		label.autoSize = TextFieldAutoSize.LEFT;
+		label.defaultTextFormat = new TextFormat(Paths.font("fps.ttf"), 14, color);
+		label.textColor = color;
+		addChild(label);
+
+		label.text = "FPS: 0 | 0 | 0\nMEM: 0.00MB | 0.00GB";
+		drawBackground();
 	}
 
-	override function update(elapsed:Float):Void
+	private override function __enterFrame(deltaTime:Int):Void
 	{
-		super.update(elapsed);
+		super.__enterFrame(deltaTime);
 
 		final now:Float = haxe.Timer.stamp() * 1000;
-
 		times.push(now);
 
 		while (times.length > 0 && times[0] < now - 1000)
 			times.shift();
 
-		deltaTimeout += elapsed * 1000;
+		deltaTimeout += deltaTime;
 
 		if (deltaTimeout < 50)
 			return;
@@ -73,19 +88,32 @@ class FPSCounter extends FlxText
 		deltaTimeout = 0;
 	}
 
-	public function updateText():Void
+	public dynamic function updateText():Void
 	{
 		var memMB:String = Std.string(FlxMath.roundDecimal(currentMemoryMB, 2));
 		var maxGB:String = Std.string(FlxMath.roundDecimal(maxMemoryMB / 1024, 2));
 
-		text =
+		label.text =
 			'FPS: ${currentFPS} | ${lowestFPS} | ${highestFPS}'
 			+ '\nMEM: ${memMB}MB | ${maxGB}GB';
 
-		color = 0xFFFFFFFF;
+		label.textColor = 0xFFFFFFFF;
 
 		if (currentFPS < FlxG.drawFramerate * 0.5)
-			color = 0xFFFF0000;
+			label.textColor = 0xFFFF0000;
+
+		drawBackground();
+	}
+
+	private function drawBackground():Void
+	{
+		bg.graphics.clear();
+		bg.graphics.beginFill(0x000000, 0.5);
+		bg.graphics.drawRect(0, 0, label.textWidth + padding * 2 + 4, label.textHeight + padding * 2 + 4);
+		bg.graphics.endFill();
+
+		label.x = padding;
+		label.y = padding - 2;
 	}
 
 	inline function get_memoryBytes():Float
