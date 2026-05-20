@@ -2934,8 +2934,8 @@ if(ClientPrefs.data.disableGCLag)
 			{
 				songHits++;
 				totalPlayed++;
-				RecalculateRating(false);
 			}
+			RecalculateRating(false);
 		}
 
 		var uiFolder:String = "";
