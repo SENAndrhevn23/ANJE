@@ -17,8 +17,9 @@ class FPSCounter extends TextField
 	public var currentMemoryMB:Float = 0;
 	public var maxMemoryMB:Float = 0;
 
-	@:noCompletion private var times:Array<Float> = [];
+	public var memoryBytes(get, never):Float;
 
+	@:noCompletion private var times:Array<Float> = [];
 	var deltaTimeout:Float = 0.0;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
@@ -34,14 +35,14 @@ class FPSCounter extends TextField
 		autoSize = LEFT;
 
 		background = true;
-		backgroundColor = 0x88000000; // black transparent background
+		backgroundColor = 0x80000000;
 
 		defaultTextFormat = new TextFormat(Paths.font("fps.ttf"), 14, color);
 
-		text = "FPS: 0 | 0 | 0\nMEM: 0MB | 0GB";
+		text = "FPS: 0 | 0 | 0\nMEM: 0.00MB | 0.00GB";
 	}
 
-	private override function __enterFrame(deltaTime:Float):Void
+	private override function __enterFrame(deltaTime:Int):Void
 	{
 		super.__enterFrame(deltaTime);
 
@@ -49,34 +50,30 @@ class FPSCounter extends TextField
 
 		times.push(now);
 
-		while(times.length > 0 && times[0] < now - 1000)
+		while (times.length > 0 && times[0] < now - 1000)
 			times.shift();
 
 		deltaTimeout += deltaTime;
 
-		// updates every 50ms instead of every frame
-		if(deltaTimeout < 50)
+		if (deltaTimeout < 50)
 			return;
 
 		currentFPS = times.length;
-
-		if(currentFPS > FlxG.updateFramerate)
+		if (currentFPS > FlxG.updateFramerate)
 			currentFPS = FlxG.updateFramerate;
 
-		if(currentFPS > highestFPS)
+		if (currentFPS > highestFPS)
 			highestFPS = currentFPS;
 
-		if(currentFPS < lowestFPS)
+		if (currentFPS < lowestFPS)
 			lowestFPS = currentFPS;
 
-		// bytes -> MB
 		currentMemoryMB = memoryBytes / 1024 / 1024;
 
-		if(currentMemoryMB > maxMemoryMB)
+		if (currentMemoryMB > maxMemoryMB)
 			maxMemoryMB = currentMemoryMB;
 
 		updateText();
-
 		deltaTimeout = 0.0;
 	}
 
@@ -91,7 +88,7 @@ class FPSCounter extends TextField
 
 		textColor = 0xFFFFFFFF;
 
-		if(currentFPS < FlxG.drawFramerate * 0.5)
+		if (currentFPS < FlxG.drawFramerate * 0.5)
 			textColor = 0xFFFF0000;
 	}
 
