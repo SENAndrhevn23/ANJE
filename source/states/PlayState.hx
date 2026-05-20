@@ -2903,7 +2903,6 @@ if(ClientPrefs.data.disableGCLag)
 				totalPlayed++;
 			}
 			updateScoreText();
-			return;
 		}
 
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition + ClientPrefs.data.ratingOffset);
