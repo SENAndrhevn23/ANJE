@@ -632,6 +632,11 @@ class PlayState extends MusicBeatState
 		uiGroup.add(botplayTxt);
 		if(ClientPrefs.data.downScroll)
 			botplayTxt.y = healthBar.y + 70;
+		// Restore hit popups in gameplay for this PlayState
+		showRating = true;
+		showCombo = true;
+		showComboNum = true;
+
 		uiGroup.cameras = [camHUD];
 		noteGroup.cameras = [camHUD];
 		comboGroup.cameras = [camHUD];
@@ -2930,12 +2935,13 @@ if(ClientPrefs.data.disableGCLag)
 			spawnNoteSplashOnNote(note);
 		if(!cpuControlled) {
 			songScore += score;
+			updateScoreText();
 			if(!note.ratingDisabled)
 			{
 				songHits++;
 				totalPlayed++;
+				RecalculateRating(false);
 			}
-			RecalculateRating(false);
 		}
 
 		var uiFolder:String = "";
