@@ -2,12 +2,10 @@ package debug;
 
 import flixel.FlxG;
 import flixel.math.FlxMath;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
+import flixel.text.FlxText;
 import openfl.system.System;
-import backend.Paths;
 
-class FPSCounter extends TextField
+class FPSCounter extends FlxText
 {
 	public var currentFPS(default, null):Int = 0;
 
@@ -20,31 +18,29 @@ class FPSCounter extends TextField
 	public var memoryBytes(get, never):Float;
 
 	@:noCompletion private var times:Array<Float> = [];
-	var deltaTimeout:Float = 0.0;
+	private var deltaTimeout:Float = 0.0;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0xFFFFFFFF)
 	{
-		super();
+		super(x, y, 0, "", 14);
 
-		this.x = x;
-		this.y = y;
+		setFormat(Paths.font("fps.ttf"), 14, color);
 
+		scrollFactor.set(0, 0);
+		moves = false;
 		selectable = false;
-		mouseEnabled = false;
-		multiline = true;
-		autoSize = LEFT;
 
+		// Proper semi-transparent background
 		background = true;
-		backgroundColor = 0x80000000;
-
-		defaultTextFormat = new TextFormat(Paths.font("fps.ttf"), 14, color);
+		backgroundColor = 0x000000;
+		alpha = 0.5;
 
 		text = "FPS: 0 | 0 | 0\nMEM: 0.00MB | 0.00GB";
 	}
 
-	private override function __enterFrame(deltaTime:Int):Void
+	override function update(elapsed:Float):Void
 	{
-		super.__enterFrame(deltaTime);
+		super.update(elapsed);
 
 		final now:Float = haxe.Timer.stamp() * 1000;
 
@@ -53,7 +49,7 @@ class FPSCounter extends TextField
 		while (times.length > 0 && times[0] < now - 1000)
 			times.shift();
 
-		deltaTimeout += deltaTime;
+		deltaTimeout += elapsed * 1000;
 
 		if (deltaTimeout < 50)
 			return;
@@ -74,10 +70,10 @@ class FPSCounter extends TextField
 			maxMemoryMB = currentMemoryMB;
 
 		updateText();
-		deltaTimeout = 0.0;
+		deltaTimeout = 0;
 	}
 
-	public dynamic function updateText():Void
+	public function updateText():Void
 	{
 		var memMB:String = Std.string(FlxMath.roundDecimal(currentMemoryMB, 2));
 		var maxGB:String = Std.string(FlxMath.roundDecimal(maxMemoryMB / 1024, 2));
@@ -86,10 +82,10 @@ class FPSCounter extends TextField
 			'FPS: ${currentFPS} | ${lowestFPS} | ${highestFPS}'
 			+ '\nMEM: ${memMB}MB | ${maxGB}GB';
 
-		textColor = 0xFFFFFFFF;
+		color = 0xFFFFFFFF;
 
 		if (currentFPS < FlxG.drawFramerate * 0.5)
-			textColor = 0xFFFF0000;
+			color = 0xFFFF0000;
 	}
 
 	inline function get_memoryBytes():Float
