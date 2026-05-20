@@ -1,6 +1,6 @@
-# ADR-JR-ENGINE
+# ANJR
 
-ADR JR ENGINE is a fork of Psych Engine 1.0.4 with better optimizations and extra features.
+ANJRE (Andre Nicholas Jr Engine) is a fork of Psych Engine 1.0.4 with better optimizations and extra features.
 
 Sadly, Psych Engine was archived on March 31, 2025. This engine is supposed to continue what Psych Engine started, while adding more features, better performance, and improved support for large projects.
 
