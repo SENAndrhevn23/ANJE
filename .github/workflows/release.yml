@@ -1,4 +1,4 @@
-name: ADR-JR Release
+name: ANJE Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -13,7 +13,7 @@ on:
       release_description:
         description: "Release description"
         required: false
-        default: "New release for ADR-JR-."
+        default: "New release for ANJE."
         type: string
 
 permissions:
@@ -84,12 +84,12 @@ jobs:
       - name: Zip Linux build
         run: |
           cd release/linux
-          zip -r ../../ADR-JR-ENGINE-linux.zip .
+          zip -r ../../ANJR-linux.zip .
 
       - name: Zip Windows build
         run: |
           cd release/windows
-          zip -r ../../ADR-JR-ENGINE-windows.zip .
+          zip -r ../../ANJR-windows.zip .
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
