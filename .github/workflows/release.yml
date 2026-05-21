@@ -1,4 +1,4 @@
-name: ANJE Release
+name: ANJR Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -13,7 +13,7 @@ on:
       release_description:
         description: "Release description"
         required: false
-        default: "New release for ANJE."
+        default: "New release for ANJR."
         type: string
 
 permissions:
