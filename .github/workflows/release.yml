@@ -98,8 +98,8 @@ jobs:
           name: ${{ inputs.tag_name }}
           body: ${{ inputs.release_description }}
           files: |
-            ADR-JR-ENGINE-linux.zip
-            ADR-JR-ENGINE-windows.zip
+            ANJR-linux.zip
+            ANJR-windows.zip
           draft: false
           prerelease: false
           generate_release_notes: true
