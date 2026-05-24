@@ -3268,7 +3268,7 @@ function addNoteStackingTab()
 		});
 
 		objY += 25;
-		changeBpmStepper = new PsychUINumericStepper(objX, objY, 1, 0, 1, 400, 3);
+		changeBpmStepper = new PsychUINumericStepper(objX, objY, 1, 0, 1, 999999, 3);
 		changeBpmStepper.onValueChange = function()
 		{
 			var sec = getCurChartSection();
@@ -3631,7 +3631,7 @@ function addNoteStackingTab()
 
 		objY += 65;
 		//(x:Float = 0, y:Float = 0, step:Float = 1, defValue:Float = 0, min:Float = -999, max:Float = 999, decimals:Int = 0, ?wid:Int = 60, ?isPercent:Bool = false)
-		bpmStepper = new PsychUINumericStepper(objX, objY, 1, 1, 1, 400, 3);
+		bpmStepper = new PsychUINumericStepper(objX, objY, 1, 1, 1, 999999, 3);
 		bpmStepper.onValueChange = function()
 		{
 			var oldTimes:Array<Float> = cachedSectionTimes.copy();
